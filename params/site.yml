@@ -1,0 +1,106 @@
+---
+- hosts: server
+  become: true
+  vars:
+    nginx_install_dir: "/tmp/{{ nginx_version }}"
+    nginx_sbin_path: "/usr/sbin/nginx"
+    nginx_conf_path: "/etc/nginx/nginx.conf"
+    nginx_custom_modules: "--with-http_auth_request_module"
+    nginx_listen_port: 80
+
+  tasks:
+  - name: Делаем директорию под страничку сайта
+    become: true
+    file:
+      path: /opt/www
+      state: directory
+      owner: root
+      mode: 0777
+      
+  - name: Устанавливаем необходимые и вспомогательные пакеты через yum
+    become: true
+    yum:
+      name: "{{item}}"
+      state: present
+    loop:
+      - mc
+      - nano
+      - yum-utils
+      - setools
+      - policycoreutils
+      - policycoreutils-python
+      - setroubleshoot
+      
+  - name: Устанавливаем epel-репозиторий
+    yum:
+      name: epel-release
+      state: present
+    tags:
+      - epel-package
+      - packages
+      
+  - name: Устанавливаем nginx из epel-репозитория
+    yum:
+      name: nginx
+      state: latest
+    notify:
+      - restart nginx
+    tags:
+      - nginx-package
+      - packages
+
+  - name: Создаем конфигурацию nginx используя шаблон jinja2
+    template:
+      src: nginx.j2
+      dest: /etc/nginx/nginx.conf
+    notify:
+        - reload nginx
+    tags:
+        - nginx-configuration
+        
+
+
+
+  - name: Configuring NGINX source with custom modules
+    command: "sed -i -e"s/listen       80;/listen       5000;/" /etc/nginx/nginx.conf"
+    become: true
+
+  - name: Configuring NGINX source with custom modules
+    command: "setsebool -P nis_enabled 1"
+    become: true
+
+  - name: Configuring NGINX source with custom modules
+    command: "systemctl enable --now nginx"
+    become: true
+    notify:
+      - restart nginx
+
+
+  - name: копируем страничку index.html на место
+    copy:
+      src: index.html
+      dest: /opt/www/index.html
+      owner: root
+      group: root
+      mode: '0777'
+    become: true
+    notify: reload nginx
+
+
+  handlers:
+  - name: restart nginx
+    systemd:
+      name: nginx
+      state: restarted
+      enabled: yes
+  - name: reload nginx
+    systemd:
+      name: nginx
+      state: reloaded
+
+
+    
+    
+    
+    
+
