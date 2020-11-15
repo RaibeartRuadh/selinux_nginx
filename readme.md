@@ -20,9 +20,9 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
 
 Запустить nginx на нестандартном порту
 Способ 1 https://github.com/RaibeartRuadh/selinux_nginx/tree/main/type1
-Добавление нестандартного порта в имеющийся тип
+Добавление нестандартного порта в имеющийся тип:
 Используется команда:
-semanage port --add --type http_port_t --proto tcp 9001
+- semanage port --add --type http_port_t --proto tcp 9001
 
 Поскольку я использую Ansible playbook, то этот блок выглядит как:
 
@@ -32,12 +32,22 @@ semanage port --add --type http_port_t --proto tcp 9001
         proto: tcp
         setype: http_port_t
         state: present
+Запуск:
+- $ bash
+- $ vagrant up
 
-Потребовалось установка пакетов:
-- setools
-- policycoreutils
-- policycoreutils-python
-- setroubleshoot
+После отработки playbook
+Проверка, что nginx запущен на нестандартном порту (в нашем случае 9001)
+- $ curl http://localhost:9001
+- или
+- $ sudo ss -tulpn | grep nginx
+
+Скриншоты с экрана присутствуют
+
+Способ 2 https://github.com/RaibeartRuadh/selinux_nginx/tree/main/type2
+
+Использую команду setsebool -P nis_enabled 1
+Иными словами, я разрешаю использование сетевого интерфейса. После применения правила, разрешаю nginx (делаю симлинк сервиса) и запускаю.
 
 Запуск:
 - $ bash
@@ -48,6 +58,11 @@ semanage port --add --type http_port_t --proto tcp 9001
 - $ curl http://localhost:9001
 - или
 - $ sudo ss -tulpn | grep nginx
+
+Скриншоты с экрана присутствую.
+
+
+
 
 
 
