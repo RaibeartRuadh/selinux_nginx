@@ -32,7 +32,7 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
         proto: tcp
         setype: http_port_t
         state: present
-Запуск:
+Запуск стенда:
 - $ bash
 - $ vagrant up
 
@@ -49,13 +49,31 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
 Использую команду setsebool -P nis_enabled 1
 Иными словами, я разрешаю использование сетевого интерфейса. После применения правила, разрешаю nginx (делаю симлинк сервиса) и запускаю.
 
-Запуск:
+В Ansible playbook это выглядит как:
+
+    - name: Установка разрешения setsebool -P nis_enabled 1
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes       
+...
+    - name: enable service nginx
+      systemd:
+        name: nginx
+        enabled: yes
+        masked: no      
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+
+Запуск стенда:
 - $ bash
 - $ vagrant up
 
 После отработки playbook
 Проверка, что nginx запущен на нестандартном порту (в нашем случае 9001)
-- $ curl http://localhost:9001
+- $ curl http://localhost:10001
 - или
 - $ sudo ss -tulpn | grep nginx
 
