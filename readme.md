@@ -40,14 +40,14 @@ semanage port --add --type http_port_t --proto tcp 9001
 - setroubleshoot
 
 Запуск:
-$ bash
-$ vagrant up
+- $ bash
+- $ vagrant up
 
 После отработки playbook
 Проверка, что nginx запущен на нестандартном порту (в нашем случае 9001)
-$ curl http://localhost:9001
-или
-$ sudo ss -tulpn | grep nginx
+- $ curl http://localhost:9001
+- или
+- $ sudo ss -tulpn | grep nginx
 
 
 
