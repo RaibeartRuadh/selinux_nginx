@@ -56,7 +56,6 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
         name: httpd_can_network_connect
         state: yes
         persistent: yes       
-...
     - name: enable service nginx
       systemd:
         name: nginx
