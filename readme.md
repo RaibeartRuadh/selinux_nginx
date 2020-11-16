@@ -71,15 +71,40 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
 - $ vagrant up
 
 После отработки playbook
-Проверка, что nginx запущен на нестандартном порту (в нашем случае 9001)
+Проверка, что nginx запущен на нестандартном порту (в нашем случае 10001)
 - $ curl http://localhost:10001
 - или
 - $ sudo ss -tulpn | grep nginx
 
 Скриншоты с экрана присутствую.
 
+Способ 3 https://github.com/RaibeartRuadh/selinux_nginx/tree/main/type3
 
+Формирование и установка модуля SELinux.
+к сожалению стенд отработал только на 90%. Самое главное придется сделать руками
 
+Запуск стенда:
+- $ bash
+- $ vagrant up
+
+Стенд будет остановлен с ошибкой, так как порт 5000 нестандартный. 
+Следующие действия выполнить руками:
+- Подключиться к стенду
+- Авторизоваться vagrant|vagrant
+- Повысить полномочия sudo su
+- Выполнить формирование модуля:
+- $ sudo ausearch -c 'nginx' --raw | audit2allow -M nginx-custom-port
+- Выполнить установку модуля:
+- $ sudo semodule -i nginx-custom-port.pp
+- Выполнить запуск nginx
+- $ systemctl start nginx
+
+Проверка, что nginx запущен на нестандартном порту (в нашем случае 5000)
+- $ curl http://localhost:5000
+- или
+- $ sudo ss -tulpn | grep nginx
+
+Скриншоты с экрана присутствую.
 
 
 
