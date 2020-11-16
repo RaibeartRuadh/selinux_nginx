@@ -6,7 +6,7 @@
     nginx_sbin_path: "/usr/sbin/nginx"
     nginx_conf_path: "/etc/nginx/nginx.conf"
     nginx_custom_modules: "--with-http_auth_request_module"
-    nginx_listen_port: 10001
+    nginx_listen_port: 5000
 
   tasks:
     - name: Делаем директорию под страничку сайта
@@ -38,18 +38,19 @@
         - setroubleshoot
         - nginx
 
-    - name: Transfer the script
-      copy: src=script.sh dest=/home/vagrant mode=0777
+#    - name: Transfer the script
+#      copy: src=script.sh dest=/home/vagrant mode=0777
 
-    - name: Restart auditd
-      service:
-        name: auditd
-        state: restarted
-
-    - name: Execute the script
-      local_action: shell sh /home/vagrant/script.sh
-
-      
+    - name: Остановим nginx
+      service: 
+        name: nginx 
+        state: stopped
+        
+    - name: Отключим nginx
+      systemd:
+        name: nginx
+        enabled: yes
+        masked: no 
 
 
     - name: Создаем конфигурацию nginx используя шаблон jinja2
@@ -58,6 +59,7 @@
         dest: /etc/nginx/nginx.conf
       tags:
         - nginx-configuration
+
     - name: копируем страничку index.html на место
       copy:
         src: index.html
@@ -66,15 +68,22 @@
         group: root
         mode: '0777'
       become: true
-    - name: enable service nginx
+
+    - name: Включаем сервис nginx
       systemd:
         name: nginx
         enabled: yes
         masked: no      
 
+############ тут придется руками
+#    - name: Команда 1
+#      shell: ausearch -c 'nginx' --raw | audit2allow -M nginx-custom-port
+
+#    - name: Команда 2
+#      shell: semodule -i nginx-custom-port.pp
 
 
-    - name: restart nginx
+    - name: Делаем рестарт nginx
       systemd:
         name: nginx
         state: restarted
