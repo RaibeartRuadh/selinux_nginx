@@ -81,7 +81,7 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
 Способ 3 https://github.com/RaibeartRuadh/selinux_nginx/tree/main/type3
 
 Формирование и установка модуля SELinux.
-к сожалению стенд отработал только на 90%. Самое главное придется сделать руками
+к сожалению стенд отработал только на 90%, так как я не нашел подходящего способа выполнить эти команды, используя playbook Ansible.  Самое главное придется сделать руками
 
 Запуск стенда:
 - $ bash
