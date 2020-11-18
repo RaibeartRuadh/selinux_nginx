@@ -106,6 +106,7 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
 
 Скриншоты с экрана присутствуют.
 
+
 2. Обеспечить работоспособность приложения при включенном selinux.
 SELinux: проблема с удаленным обновлением зоны DNS
 Инженер настроил следующую схему:
@@ -115,12 +116,12 @@ client - клиентская рабочая станция (192.168.50.15).
 При попытке удаленно (с рабочей станции) внести изменения в зону ddns.lab происходит следующее:
 
 [vagrant@client ~]$ nsupdate -k /etc/named.zonetransfer.key
-> server 192.168.50.10
-> zone ddns.lab
-> update add www.ddns.lab. 60 A 192.168.50.15
-> send
-update failed: SERVFAIL
->
+    > server 192.168.50.10
+    > zone ddns.lab
+    > update add www.ddns.lab. 60 A 192.168.50.15
+    > send
+    update failed: SERVFAIL
+    >
 Инженер перепроверил содержимое конфигурационных файлов и, убедившись, что с ними всё в порядке, предположил, что данная ошибка связана с SELinux.
 
 Разбираемся:
@@ -142,7 +143,7 @@ update failed: SERVFAIL
 Получаем информацию о том, что юниту named SELinux запрещает доступ к созданию файла named.ddns.lab.view1.jnl
 Выполняем поиск зоны ddns.lab, для получения типа файла безопаности:
 
-ll -Z /etc/named/dynamic/named.ddns.lab.view1
+- $ ll -Z /etc/named/dynamic/named.ddns.lab.view1
 
 Подтверждаем информацию, что Это etc_t. Динамические зоны не могут быть расположены в защищенном каталоге /etc/. 
 Их следует располагать в каталоге /var/named/dynamic/
